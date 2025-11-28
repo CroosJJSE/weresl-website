@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Inter:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600&display=swap');
+
+@layer base {
+  :root {
+    --background: 255 255 255;
+    --foreground: 31 41 55;
+    --card: 254 254 254;
+    --card-foreground: 31 41 55;
+    --popover: 254 254 254;
+    --popover-foreground: 31 41 55;
+    --primary: 0 184 169;
+    --primary-foreground: 254 254 254;
+    --secondary: 255 107 53;
+    --secondary-foreground: 254 254 254;
+    --muted: 249 250 251;
+    --muted-foreground: 113 113 122;
+    --accent: 255 107 53;
+    --accent-foreground: 254 254 254;
+    --destructive: 239 68 68;
+    --destructive-foreground: 254 254 254;
+    --border: 229 231 235;
+    --input: 229 231 235;
+    --ring: 0 184 169;
+    --radius: 0.5rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
