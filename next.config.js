@@ -6,7 +6,13 @@ const nextConfig = {
       'lh3.googleusercontent.com',
       'firebasestorage.googleapis.com',
       'i.ytimg.com',
-      'img.youtube.com'
+      'img.youtube.com',
+      'scontent.cdninstagram.com',
+      'scontent-*.cdninstagram.com',
+      'graph.instagram.com',
+      'fbcdn.net',
+      'scontent-*.fbcdn.net',
+      'media.licdn.com',
     ],
     remotePatterns: [
       {
@@ -20,6 +26,22 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '**.ytimg.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.cdninstagram.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'graph.instagram.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.fbcdn.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.licdn.com',
       },
     ],
   },

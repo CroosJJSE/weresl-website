@@ -1,0 +1,9 @@
+{
+  "crons": [
+    {
+      "path": "/api/social-media/sync",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}
+

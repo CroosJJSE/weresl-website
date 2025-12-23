@@ -21,6 +21,7 @@ import { TimelineEvent } from '@/types/timeline';
 import { Subscriber } from '@/types/subscriber';
 import { TeamMember } from '@/types/team';
 import { TransparencySheet } from '@/types/transparency';
+import { SocialMediaPost, SocialMediaPlatform } from '@/types/social-media';
 
 // Helper to convert Firestore timestamps
 function convertTimestamps(data: DocumentData): any {
@@ -210,5 +211,80 @@ export async function getTransparencySheets(category?: string): Promise<Transpar
     id: doc.id,
     ...doc.data(),
   })) as TransparencySheet[];
+}
+
+// Social Media Posts
+export async function getSocialMediaPosts(
+  platform?: SocialMediaPlatform,
+  limitCount: number = 20
+): Promise<SocialMediaPost[]> {
+  if (!db) {
+    throw new Error('Firestore not initialized');
+  }
+  const constraints: QueryConstraint[] = [
+    orderBy('timestamp', 'desc'),
+    limit(limitCount),
+  ];
+  if (platform) {
+    constraints.unshift(where('platform', '==', platform));
+  }
+  const q = query(collection(db, 'social_media_posts'), ...constraints);
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...convertTimestamps(doc.data()),
+  })) as SocialMediaPost[];
+}
+
+export async function upsertSocialMediaPost(post: Omit<SocialMediaPost, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  if (!db) {
+    throw new Error('Firestore not initialized');
+  }
+  // Check if post already exists by externalId and platform
+  const q = query(
+    collection(db, 'social_media_posts'),
+    where('platform', '==', post.platform),
+    where('externalId', '==', post.externalId),
+    limit(1)
+  );
+  const snapshot = await getDocs(q);
+  
+  const now = new Date();
+  const postData = {
+    ...post,
+    timestamp: post.timestamp instanceof Date ? Timestamp.fromDate(post.timestamp) : Timestamp.fromDate(new Date(post.timestamp)),
+    updatedAt: Timestamp.fromDate(now),
+  };
+
+  if (!snapshot.empty) {
+    // Update existing post
+    await updateDoc(snapshot.docs[0].ref, postData);
+    return snapshot.docs[0].id;
+  } else {
+    // Create new post
+    const docRef = await addDoc(collection(db, 'social_media_posts'), {
+      ...postData,
+      createdAt: Timestamp.fromDate(now),
+    });
+    return docRef.id;
+  }
+}
+
+export async function deleteOldSocialMediaPosts(olderThanDays: number = 90): Promise<void> {
+  if (!db) {
+    throw new Error('Firestore not initialized');
+  }
+  const cutoffDate = new Date();
+  cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
+  const cutoffTimestamp = Timestamp.fromDate(cutoffDate);
+  
+  const q = query(
+    collection(db, 'social_media_posts'),
+    where('timestamp', '<', cutoffTimestamp)
+  );
+  const snapshot = await getDocs(q);
+  
+  const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+  await Promise.all(deletePromises);
 }
 

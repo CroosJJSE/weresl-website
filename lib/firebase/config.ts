@@ -20,14 +20,17 @@ let storage: FirebaseStorage | null = null;
 // Only initialize Firebase if config is provided
 const hasFirebaseConfig = firebaseConfig.apiKey && firebaseConfig.projectId;
 
-if (typeof window !== 'undefined' && hasFirebaseConfig) {
+if (hasFirebaseConfig) {
   try {
     if (!getApps().length) {
       app = initializeApp(firebaseConfig);
     } else {
       app = getApps()[0];
     }
-    auth = getAuth(app);
+    // Only initialize auth on client side
+    if (typeof window !== 'undefined') {
+      auth = getAuth(app);
+    }
     db = getFirestore(app);
     storage = getStorage(app);
   } catch (error) {
